@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # File-based H2 for now -> swap to Postgres/MySQL for production:
+    # url: jdbc:postgresql://localhost:5432/wardrobe
+    # driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:file:./data/wardrobe;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+app:
+  jwt:
+    secret: "change-this-to-a-long-random-secret-before-deploying-anywhere"
+    expiration-ms: 604800000 # 7 days
+  upload:
+    dir: ./uploads
+  cors:
+    allowed-origin: "http://localhost:5173" # your Vite dev server / deployed frontend URL
