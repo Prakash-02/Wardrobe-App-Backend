@@ -38,10 +38,17 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Swap for postgresql/mysql-connector-j driver when you move off H2 -->
+    <!-- Used for local dev (default datasource) -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Used in production when DB_URL points at Postgres (e.g. Render Postgres) -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
 

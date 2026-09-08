@@ -1,15 +1,14 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   datasource:
-    # File-based H2 for now -> swap to Postgres/MySQL for production:
-    # url: jdbc:postgresql://localhost:5432/wardrobe
-    # driver-class-name: org.postgresql.Driver
-    url: jdbc:h2:file:./data/wardrobe;AUTO_SERVER=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    # Defaults to local H2 file DB when no env vars are set.
+    # On Render, set DB_URL / DB_DRIVER / DB_USERNAME / DB_PASSWORD to point at Postgres instead.
+    url: ${DB_URL:jdbc:h2:file:./data/wardrobe;AUTO_SERVER=TRUE}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,9 +20,9 @@ spring:
 
 app:
   jwt:
-    secret: "change-this-to-a-long-random-secret-before-deploying-anywhere"
+    secret: ${JWT_SECRET:change-this-to-a-long-random-secret-before-deploying-anywhere}
     expiration-ms: 604800000 # 7 days
   upload:
-    dir: ./uploads
+    dir: ${UPLOAD_DIR:./uploads}
   cors:
-    allowed-origin: "http://localhost:5173" # your Vite dev server / deployed frontend URL
+    allowed-origin: ${CORS_ORIGIN:http://localhost:5173} # set to your deployed frontend URL in prod
