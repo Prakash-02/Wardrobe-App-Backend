@@ -59,6 +59,25 @@ public class WardrobeService {
                 .toList();
     }
 
+    // Viewing someone ELSE's collection (or your own, via this same path).
+    // Enforces: only visible if the target account is public, or the requester
+    // owns it themselves.
+    public List<WardrobeItemResponse> listItemsForUsername(String requesterEmail, String targetUsername, String baseUrl) {
+        User target = userRepository.findByUsername(targetUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean isOwner = target.getEmail().equalsIgnoreCase(requesterEmail);
+
+        if (!target.isPublicProfile() && !isOwner) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This wardrobe is private");
+        }
+
+        return itemRepository.findByOwnerIdOrderByCreatedAtDesc(target.getId())
+                .stream()
+                .map(item -> WardrobeItemResponse.from(item, baseUrl))
+                .toList();
+    }
+
     public void deleteItem(String ownerEmail, Long itemId) {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));

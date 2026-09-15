@@ -26,8 +26,15 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String passwordHash;
+
+    // "public" is a reserved word, hence publicProfile rather than isPublic
+    @Column(nullable = false)
+    private boolean publicProfile = false;
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();

@@ -29,14 +29,20 @@ public class AuthService {
         if (userRepository.existsByEmail(req.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with this email already exists");
         }
+        if (userRepository.existsByUsername(req.username())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "That username is already taken");
+        }
         User user = new User();
         user.setName(req.name());
+        user.setUsername(req.username());
         user.setEmail(req.email());
         user.setPasswordHash(passwordEncoder.encode(req.password()));
+        user.setPublicProfile(false); // private by default
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail());
+        return new AuthResponse(token, user.getId(), user.getName(), user.getUsername(),
+                user.getEmail(), user.isPublicProfile());
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -48,6 +54,7 @@ public class AuthService {
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail());
+        return new AuthResponse(token, user.getId(), user.getName(), user.getUsername(),
+                user.getEmail(), user.isPublicProfile());
     }
 }
