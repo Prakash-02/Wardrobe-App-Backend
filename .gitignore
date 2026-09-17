@@ -1,0 +1,12 @@
+target/
+data/
+uploads/
+
+# IDE files
+.idea/
+*.iml
+
+# Local environment files
+.env
+.env.*
+!.env.example
