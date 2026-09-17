@@ -9,9 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class DatabaseMigrationConfig {
 
     @Bean
-    CommandLineRunner addPublicProfileColumn(JdbcTemplate jdbcTemplate) {
-        return args -> jdbcTemplate.execute(
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS public_profile BOOLEAN NOT NULL DEFAULT FALSE"
-        );
+    CommandLineRunner migrateUsersTable(JdbcTemplate jdbcTemplate) {
+        return args -> {
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(255)");
+            jdbcTemplate.update("UPDATE users SET username = CONCAT('user_', id) WHERE username IS NULL OR username = ''");
+            jdbcTemplate.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_username_idx ON users (username)");
+            jdbcTemplate.execute("ALTER TABLE users ALTER COLUMN username SET NOT NULL");
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS public_profile BOOLEAN NOT NULL DEFAULT FALSE");
+        };
     }
 }
